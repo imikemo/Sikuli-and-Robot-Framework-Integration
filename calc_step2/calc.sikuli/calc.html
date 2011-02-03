@@ -1,0 +1,145 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }  
+         
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>calc.sikuli\calc.sikuli</h2> <a href="calc.sikuli\calc.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+<span class="kw">from</span> __future__ <span class="kw">import</span> with_statement
+<span class="kw">from</span> sikuli.Sikuli <span class="kw">import</span> *
+
+<span class="kw">class</span> Calculator(BaseLogger):
+
+        <span class="kw">def</span> __init__(self):
+                self.appCoordinates = (<span class="dig">0</span>, <span class="dig">0</span>, <span class="dig">1024</span>, <span class="dig">768</span>)
+
+        <span class="kw">def</span> startApp(self):
+                calcApp = App(<span class="str">"Calculator"</span>)
+                <span class="kw">if</span> <span class="kw">not</span> calcApp.window():
+                                App.open(<span class="str">"calc.exe"</span>); <span class="skw">wait</span>(<span class="dig">2</span>)
+                calcApp.focus(); <span class="skw">wait</span>(<span class="dig">1</span>)
+
+        <span class="kw">def</span> verifyApp(self):
+                <span class="cmt"># check application
+</span>                <span class="kw">if</span> exists(<img src="CalcApp.png" />):
+                        <span class="kw">print</span>(<span class="str">"PASS: Calculator window appeared"</span>)
+                <span class="kw">else</span>:
+                        <span class="kw">print</span>(<span class="str">"FAIL: No calculator window"</span>)
+
+        <span class="kw">def</span> performAction(self, *args):
+                <span class="cmt"># get application region
+</span>                <span class="skw">find</span>(<img src="CalcApp.png" />)
+
+                match = getLastMatch()
+                self.appCoordinates = (match.getX(), match.getY(), match.getW(), match.getH())
+                appRegion = Region(*self.appCoordinates)
+
+                <span class="cmt">#rewrite action
+</span>                action = args[<span class="dig">1</span>]
+                <span class="kw">if</span> args[<span class="dig">1</span>] == <span class="str">'+'</span>:
+                        action = <span class="str">'Plus'</span>
+                <span class="kw">elif</span> args[<span class="dig">1</span>] == <span class="str">'exp'</span>:
+                        action = <span class="str">'Exp'</span>
+
+                appRegion.<span class="skw">click</span>(<img src="btnExp.png" />)
+                <span class="kw">with</span> appRegion:
+                        <span class="skw">click</span>(<img src="btnC.png" />)
+
+                        <span class="skw">click</span>( <img src="btn%s.png" /> % (args[<span class="dig">0</span>],) )
+                        <span class="skw">click</span>( <img src="btn%s.png" /> % (action,) )
+                        <span class="skw">click</span>( <img src="btn%s.png" /> % (args[<span class="dig">2</span>],) )
+
+                        <span class="skw">click</span>(<img src="btnEqual.png" />)
+
+        <span class="kw">def</span> verifyResult(self, *args):
+                expected_result = str(eval(<span class="str">''</span>.join(args)))
+                actual_result = self.getResultFromClipboard()
+
+                <span class="cmt">#verification
+</span>                <span class="kw">if</span> actual_result == expected_result:
+                        <span class="kw">print</span>(<span class="str">"PASS: Action performed correctly and result equals %s"</span> % expected_result)
+                <span class="kw">else</span>:
+                        <span class="kw">print</span>(<span class="str">"FAIL: Actual result '%s' is not equal to expected result '%s'"</span> % (actual_result, expected_result))
+
+        <span class="kw">def</span> getResultFromClipboard(self):
+                <span class="skw">type</span>(<span class="str">'c'</span>, KEY_CTRL)
+                <span class="kw">return</span> str(Env.getClipboard())
+
+        <span class="kw">def</span> runTest(self):
+                self.startApp()
+                self.verifyApp()
+
+                actions = <span class="str">'2+2'</span>
+                self.performAction(*actions)
+                self.verifyResult(*actions)
+
+calc = Calculator()
+calc.runTest()
+</pre>
+</body>
+</html>
