@@ -1,0 +1,12 @@
+================================================
+Sikuli and Robot Framework Integration Project
+================================================
+
+This is source files for my blogpost on blog.mykhailo.com.
+Each directory is a result of same name step described in the blogpost.
+
+To use "robottest.bat" files - robotframework.jar file is requited.
+It can be downloaded from Robot Framework official site.
+
+Best regards,
+Mykhailo Moroz
