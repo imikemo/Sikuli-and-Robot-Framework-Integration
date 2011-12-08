@@ -16,9 +16,9 @@ def sikuli_method(name, *args, **kwargs):
 	return sys.modules['sikuli.Sikuli'].__dict__[name](*args, **kwargs)
 
 # overwritten Screen.exists method
-def exists(target, timeout=None):
+def exists(target, timeout=0):
 	addFoundImage(getFilename(target))
-	return sikuli_method('exists', target, timeout)
+	return sikuli_method('exists', target, float(timeout))
 
 # =============================================== #
 #          Overwritten sikuli classes             #
